@@ -1,0 +1,198 @@
+﻿@model MVCParentChildForm.Models.User
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>User</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EmailId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EmailId, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EmailId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.MobileNo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.MobileNo, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.MobileNo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <h4>Order</h4>
+        <hr />
+        @Html.HiddenFor(model => model.Orders)
+        <div class="form-group">
+            <table id="dtTable" class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th>
+                            @Html.TextBox("txtProductName", null, new { @class = "form-control", @placeholder = "Product Name" })
+                        </th>
+                        <th>
+                            @Html.DropDownList("ddlProductType", new List<SelectListItem>{
+                                    new SelectListItem{ Text="Select Any Product Type", Value = "" },
+                                    new SelectListItem{ Text="Software", Value = "Software" },
+                                    new SelectListItem{ Text="Website", Value = "Website" },
+                                    new SelectListItem{ Text="Services", Value = "Services" },
+                                },
+                                new { @class = "form-control", @placeholder = "Designation" }
+                               )
+                        </th>
+                        <th>
+                            @Html.TextBox("txtAmount", null, new { @class = "form-control", @placeholder = "Amount", @type = "number" })
+                        </th>
+                        <th>
+                            <input type="button" id="addRow" value="Add New Row" class="btn btn-info" />
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+
+        var dtTableHeader = $("#dtTable tr th");
+
+        $("#addRow").on("click", function () {
+            var errorMsg = validate();
+            if (errorMsg == "") {
+
+                var dtTbl = $('#dtTable')[0];
+                var rowCnt = dtTbl.rows.length; // Get table row count.
+                var tr = dtTbl.insertRow(rowCnt); // Table row.
+                tr = dtTbl.insertRow(rowCnt);
+
+                for (var c = 0; c < dtTableHeader.length; c++) {
+                    var value = "";
+                    if (c == 0) {
+                        value = $("#txtProductName").val();
+                    }
+                    else if (c == 1) {
+                        value = $("#ddlProductType").val();
+                    }
+                    else if (c == 2) {
+                        value = $("#txtAmount").val();
+                    }
+
+                    var td = $("<td>")[0]; // create td element
+                    td = tr.insertCell(c);
+
+                    if (c == dtTableHeader.length - 1) { // First column.
+                        // Add a button.
+                        var button = $('<input>')[0]; //create element and select 0 index
+                        button.setAttribute('type', 'button');
+                        button.setAttribute('value', 'Remove');
+                        button.setAttribute('onclick', 'removeRow(this)');
+                        button.setAttribute('class', 'btn btn-danger');
+                        td.appendChild(button);
+                    }
+                    else {
+                        // Create and add textbox in each cell.
+                        var element = $('<input>')[0]; //create element and select 0 index
+                        element.setAttribute('type', 'text');
+                        element.setAttribute('value', value);
+                        element.setAttribute('class', 'form-control');
+                        element.setAttribute('disabled', 'disabled');
+                        td.appendChild(element);
+                    }
+                }
+                submitData();
+                clearElementValue();
+                $("#txtProductName").focus();
+            }
+            else {
+                alert(errorMsg);
+            }
+        })
+
+        function removeRow(currElement) {
+            var dtTbl = $('#dtTable')[0];
+            var currRow = currElement.parentElement.parentElement.rowIndex;
+            dtTbl.deleteRow(currRow);
+            submitData();
+        }
+
+        function submitData() {
+            var dtTbl = $('#dtTable')[0];
+            var values = "";
+            for (row = 1; row < dtTbl.rows.length - 1; row++) {
+                for (c = 0; c < dtTbl.rows[row].cells.length; c++) {   // EACH CELL IN A ROW.
+                    var element = dtTbl.rows.item(row).cells[c].children[0];//find current element
+                    if (element.getAttribute('type') == 'text') {
+                        values = values + element.value + "~";
+                    }
+                }
+                values = values.substring(0, values.length - 1);//remove last ~
+                values = values + "#";
+            }
+            values = values.substring(0, values.length - 1);//remove last #
+            $("#Orders").val(values);
+        }
+
+        function clearElementValue() {
+            $("#txtProductName").val('');
+            $("#ddlProductType").val('');
+            $("#txtAmount").val('');
+        }
+
+        function validate() {
+            var errorMsg = "";
+            var txtProductName = $("#txtProductName").val();
+            if (txtProductName == "") {
+                errorMsg = "ProductName is required.\n";
+            }
+            var ddlProductType = $("#ddlProductType").val();
+            if (ddlProductType == "") {
+                errorMsg = errorMsg + "Product Type is required.\n";
+            }
+            var txtAmount = $("#txtAmount").val();
+            if (txtAmount == "") {
+                errorMsg = errorMsg + "Amount is required.";
+            }
+            return errorMsg;
+        }
+
+    </script>
+
+
+
+
+}

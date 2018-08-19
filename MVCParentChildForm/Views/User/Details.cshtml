@@ -1,0 +1,95 @@
+﻿@model MVCParentChildForm.Models.User
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>User</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EmailId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EmailId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MobileNo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MobileNo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreationDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreationDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdateDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UpdateDate)
+        </dd>
+        <dd>
+            <div class="form-group">
+                @if (ViewBag.OrderList!=null && Enumerable.Count(ViewBag.OrderList)> 0)
+                {
+                    <table id="dtTable" class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>
+                                    Product Name
+                                </th>
+                                <th>
+                                    Product Type
+                                </th>
+                                <th>
+                                    Amount
+                                </th>
+                            </tr>
+                            @foreach (var order in ViewBag.OrderList)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="text" value="@order.ProductName" class="form-control" disabled="disabled">
+                                    </td>
+                                    <td>
+                                        <input type="text" value="@order.ProductType" class="form-control" disabled="disabled">
+                                    </td>
+                                    <td>
+                                        <input type="text" value="@order.Amount" class="form-control" disabled="disabled">
+                                    </td>
+                                </tr>
+                            }
+                            <tr></tr>
+
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </dd>
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
